@@ -1,9 +1,13 @@
 {
-    "appKeys": {},
+    "appKeys": {
+        "KEY_12H_TIME": 0,
+        "KEY_HIDE_BATTERY": 1,
+        "KEY_HIDE_DATE": 2
+    },
     "capabilities": [
         "configurable"
     ],
-    "companyName": "Jon Lundy",
+    "companyName": "Jonathon Lundy",
     "longName": "Bullets",
     "projectType": "native",
     "resources": {
