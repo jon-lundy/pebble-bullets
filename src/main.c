@@ -1,4 +1,5 @@
 #include <pebble.h>
+#include <inttypes.h>
 
 // configuration keys
 #define KEY_12H_TIME 0
@@ -9,8 +10,8 @@
 #define STR_TRUE "true"
 
 // constants for defining various element sizes
-#define TOP_BOTTOM_MARGIN 2
-#define TOP_BOTTOM_HEIGHT 14
+#define TOP_BOTTOM_MARGIN 0
+#define TOP_BOTTOM_HEIGHT 16
 #define MAX_BATTERY_VALUE 100
 #define BATTERY_BULLET_RADIUS 4
 #define BATTERY_BULLET_VALUE 10 //i.e., how much battery one dot represents
@@ -220,11 +221,11 @@ static void handle_battery_state(BatteryChargeState charge) {
   update_battery_indicator();
 }
 
-static void persist_and_update_bool_setting(const int key, const char *value, bool *setting) {
-  if (strcmp(value, STR_TRUE) == 0) {
+static void persist_and_update_bool_setting(const int key, const int value, bool *setting) {
+  if (value) {
     persist_write_bool(key, true);
     *setting = true;
-  } else if (strcmp(value, STR_FALSE) == 0) {
+  } else {
     persist_write_bool(key, false);
     *setting = false;
   }
@@ -240,17 +241,18 @@ static void handle_inbox_received(DictionaryIterator *iterator, void *context) {
   
   Tuple *tuple = dict_read_first(iterator);
   while (tuple) {
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "Got setting. Key: %"PRIu32", Value %"PRId32"", tuple->key, tuple->value->int32);
     switch(tuple->key) {
     case KEY_12H_TIME:
-      persist_and_update_bool_setting(KEY_12H_TIME, tuple->value->cstring, &use_12h_time);
+      persist_and_update_bool_setting(KEY_12H_TIME, tuple->value->int32, &use_12h_time);
       date_and_time_dirty = true;
       break;
     case KEY_HIDE_BATTERY:
-      persist_and_update_bool_setting(KEY_HIDE_BATTERY, tuple->value->cstring, &hide_battery);
+      persist_and_update_bool_setting(KEY_HIDE_BATTERY, tuple->value->int32, &hide_battery);
       battery_dirty = true;
       break;
     case KEY_HIDE_DATE:
-      persist_and_update_bool_setting(KEY_HIDE_DATE, tuple->value->cstring, &hide_date);
+      persist_and_update_bool_setting(KEY_HIDE_DATE, tuple->value->int32, &hide_date);
       date_and_time_dirty = true;
       break;
     }
